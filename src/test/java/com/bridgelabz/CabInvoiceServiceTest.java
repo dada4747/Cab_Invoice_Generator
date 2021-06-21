@@ -1,10 +1,16 @@
 package com.bridgelabz;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CabInvoiceServiceTest {
-    CabInvoiceService cabInvoiceService = new CabInvoiceService();
+    CabInvoiceService cabInvoiceService = null;
+
+    @BeforeEach
+    public void setUp() {
+        cabInvoiceService = new CabInvoiceService();
+    }
 
     @Test
     public void givenDistanceAndTime_shouldReturn_totalFare(){
@@ -30,6 +36,19 @@ public class CabInvoiceServiceTest {
         double totalFare = cabInvoiceService.calculateFareForMultipleRides(rides);
         Assertions.assertEquals(96, totalFare, 0);
     }
-
+    @Test
+    public void givenUserIdAndRide_shouldReturnInvoiceSummary() {
+        String userId = "adsure@gmail.com";
+        Ride[] rides = {
+                new Ride(2.0, 5),
+                new Ride(0.1, 1),
+                new Ride(4.1, 25)
+        };
+        cabInvoiceService.addRides(userId);
+        InvoiceSummary invoiceSummary = cabInvoiceService.getInvoiceSummary(rides);
+        InvoiceSummary fare = new InvoiceSummary(3, 96);
+        Assertions.assertEquals(fare, invoiceSummary);
+        Assertions.assertEquals(rides.length, cabInvoiceService.getRidesByUserId(userId).size());
+    }
 
 }
