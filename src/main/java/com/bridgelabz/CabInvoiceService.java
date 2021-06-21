@@ -1,6 +1,8 @@
 package com.bridgelabz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CabInvoiceService {
     public static final double MAXMUM_FLARE = 5;
@@ -20,18 +22,27 @@ public class CabInvoiceService {
         }
         return aggregateFare;
     }
-    public InvoiceSummary getInvoiceSummary(Ride[] rides) {
-        return new InvoiceSummary(rides.length, calculateFareForMultipleRides(rides));
+    public InvoiceSummary calculateSummaryFare(List<Ride> rides) {
+        double fare = 0;
+        for (Ride ride : rides) {
+            fare += this.calculatorFare(ride.distance, ride.time);
+        }
+        return new InvoiceSummary(rides.size(), fare);
     }
 
-    public void addRides(String userId) {
-        rideRepository.addUserRides(userId, listOfRides);
+    public void addRides(String userId, Ride[] rides) {
+        rideRepository.addRide(userId, Arrays.asList(rides));
     }
 
-    public ArrayList<Ride> getRidesByUserId(String userId) {
-        ArrayList<Ride> ridesByUserId = rideRepository.getRidesByUserId(userId);
-        return ridesByUserId;
+    public InvoiceSummary getInvoiceSummary(String userId) {
+        return this.calculateSummaryFare(rideRepository.getRides(userId));
     }
 
-
+    @Override
+    public String toString() {
+        return "CabInvoiceService{" +
+                "rideRepository=" + rideRepository +
+                ", listOfRides=" + listOfRides +
+                '}';
+    }
 }
